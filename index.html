@@ -456,16 +456,23 @@
                     <!-- Contact Form -->
                     <form>
                         <div class="form-group">
-                            <input type="text" class="form-control-input" placeholder="Name" required>
+                            <input type="text" class="form-control-input" placeholder="Name" name="name" id="name" required>
                         </div>
                         <div class="form-group">
-                            <input type="email" class="form-control-input" placeholder="Email" required>
+                            <input type="email" class="form-control-input" placeholder="Email" name="email" id="email" required>
                         </div>
                         <div class="form-group">
-                            <textarea class="form-control-textarea" placeholder="Message" required></textarea>
+                            <input type="text" class="form-control-input" placeholder="Subject" name="subject" id="subject">
                         </div>
                         <div class="form-group">
-                            <button type="submit" class="form-control-submit-button">Submit</button>
+                            <textarea class="form-control-textarea" placeholder="Message" name="message" id="message" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" id="messageButton" onclick="getData()" class="form-control-submit-button">Submit</button>
+                            <div id="spinner" class="spinner-border" style="color: #000000;" role="status">
+                              <span class="sr-only"></span>
+                            </div>
+
                         </div>
                     </form>
                     <!-- end of contact form -->
@@ -475,6 +482,67 @@
         </div> <!-- end of container -->
     </div> <!-- end of form-1 -->
     <!-- end of contact -->
+  
+    <script>
+      // Constants
+      const apiUrl = 'https://skrumify.com/api/v1';
+      const alertSuccess = document.getElementById('alert_success');
+
+      const messageButton = document.getElementById('messageButton');
+      const spinner = document.getElementById('spinner');
+
+      spinner.style.visibility = 'hidden';
+
+      function getData() {
+        spinner.style.visibility = 'visible';
+        messageButton.style.display = 'none';
+
+        // Get Field data
+        let name = document.getElementById('name').value
+        let email = document.getElementById('email').value
+        let subject = document.getElementById('subject').value
+        let message = document.getElementById('message').value
+
+        // Make object
+        const postData = {
+          name: name,
+          email: email,
+          subject: subject,
+          body: message,
+        }
+        // Send data to API
+        fetch(`${apiUrl}/hooks/8c2add1b-b0fc-45d4-b685-ddb922d2bf29/tickets`, {
+          method: 'POST', // *GET, POST, PUT, DELETE, etc.
+          mode: 'cors', // no-cors, *cors, same-origin
+          cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+          credentials: 'same-origin', // include, *same-origin, omit
+          headers: {
+            'Content-Type': 'application/json'
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          redirect: 'follow', // manual, *follow, error
+          referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+          body: JSON.stringify(postData)
+        })
+          .then(response => response.json())
+          .then(data => {
+          console.log(data)
+          // Alert user of success
+          alert('Your message has been sent. Thank you!')
+
+          spinner.style.visibility = 'hidden';
+          messageButton.style.display = 'unset';
+
+          // Clear Fields
+          document.getElementById('name').value = null;
+          document.getElementById('email').value = null;
+          document.getElementById('subject').value = null;
+          document.getElementById('message').value = null;
+        })
+        // Alert user of error
+          .catch(err => alert(err))
+      }
+  </script>
 
 
     <!-- Footer -->
